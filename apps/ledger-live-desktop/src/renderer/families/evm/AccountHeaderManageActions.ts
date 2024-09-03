@@ -39,33 +39,32 @@ const AccountHeaderActions = ({ account, parentAccount }: Props) => {
           parentAccount,
         }),
       );
-    } else if (isEthereumAccount) {
-      dispatch(
-        openModal("MODAL_EVM_STAKE", {
-          account,
-        }),
-      );
     } else {
       const yieldId = (() => {
-        if (isEthereumMaticTokenAccount) {
+        if (isEthereumAccount) {
+          return "ethereum-eth-everstake-staking";
+        } else if (isEthereumMaticTokenAccount) {
           return "ethereum-matic-native-staking";
         } else if (isAvalancheCAccount) {
           return "avalanche-avax-liquid-staking";
+        } else if (isArbitrumGRTTokenAccount) {
+          return "arbitrum-grt-native-staking";
         }
-        return "arbitrum-grt-native-staking";
       })();
 
-      history.push({
-        pathname: "/platform/stakekit",
-        state: {
-          yieldId,
-          accountId: account.id,
-          returnTo:
-            account.type === "TokenAccount"
-              ? `/account/${account.parentId}/${account.id}`
-              : `/account/${account.id}`,
-        },
-      });
+      if (yieldId !== undefined) {
+        history.push({
+          pathname: "/platform/stakekit",
+          state: {
+            yieldId,
+            accountId: account.id,
+            returnTo:
+              account.type === "TokenAccount"
+                ? `/account/${account.parentId}/${account.id}`
+                : `/account/${account.id}`,
+          },
+        });
+      }
     }
   }, [
     account,
