@@ -5,6 +5,7 @@ import { SubAccount } from "@ledgerhq/types-live";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 import { openModal } from "~/renderer/actions/modals";
 import IconCoins from "~/renderer/icons/Coins";
 
@@ -20,6 +21,8 @@ const AccountHeaderActions = ({ account, parentAccount, source }: Props) => {
   const mainAccount = getMainAccount(account, parentAccount);
   const { cosmosResources } = mainAccount;
   const earnRewardEnabled = canDelegate(mainAccount);
+  const history = useHistory();
+
   const hasDelegations = cosmosResources.delegations.length > 0;
   const onClick = useCallback(() => {
     if (account.type !== "Account") return;
@@ -31,12 +34,14 @@ const AccountHeaderActions = ({ account, parentAccount, source }: Props) => {
         }),
       );
     } else if (hasDelegations) {
-      dispatch(
-        openModal("MODAL_COSMOS_DELEGATE", {
-          account,
-          source,
-        }),
-      );
+      history.push({
+        pathname: "/platform/stakekit",
+        state: {
+          yieldId: "cosmos-atom-native-staking",
+          accountId: account.id,
+          returnTo: `/account/${account.id}`,
+        },
+      });
     } else {
       dispatch(
         openModal("MODAL_COSMOS_REWARDS_INFO", {
